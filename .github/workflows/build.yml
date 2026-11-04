@@ -1,0 +1,37 @@
+name: Build APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare Android icon resources
+        run: |
+          mkdir -p android-res/mipmap-xxxhdpi
+          cp deadrush.png android-res/mipmap-xxxhdpi/deadrush.png
+
+      - name: Build APK
+        id: build
+        uses: love-actions/love-actions-android@v2
+        with:
+          app-name: "chickensandbox"
+          bundle-id: "com.example.chickensandbox"
+          resource-path: "./android-res"
+          icon-specifier: "@mipmap/chickensandbox"
+          love-package: "./game.love"
+          product-name: "deadrush"
+          version-string: "2.0"
+          version-code: "1"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: chicken-apk
+          path: build
+          
